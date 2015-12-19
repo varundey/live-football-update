@@ -18,10 +18,10 @@ soup=b(requests.get(url).content,"lxml")
 current_match = soup.findAll("div",{"class":"row-gray even"})[0]
 
 pynotify.init ("icon-summary-body")
+count =0
+######################################################################################
+def getdetails(content, count):
 
-###############################################
-def getdetails(content):
-	count=0
 	while count != len(url):	
 		for i in content:
 			a=[]
@@ -52,8 +52,8 @@ def getdetails(content):
 					else:
 						a.append("away_team")
 		count+=1
-	return a
-######################################################
+	return a,count
+################################################################################################
 if current_match.find("img"):
 
 	match_time = current_match.findAll("div")[0].text
@@ -75,7 +75,8 @@ if current_match.find("img"):
 		details_soup = b(requests.get(details).content,"lxml")
 
 		body = details_soup.findAll("div",{"data-id":"details"})
-		a=getdetails(body)
+		a,count=getdetails(body,count)
+
 		if a[len(a)-1]=="home_team":
 			notification = pynotify.Notification(home_team,a[0] + " "+a[2]+" "+a[1],icon)
 		else:
