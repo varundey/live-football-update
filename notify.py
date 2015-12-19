@@ -9,9 +9,9 @@ bundesliga="http://www.livescore.com/soccer/germany/bundesliga/"
 ########notification refresh interval in seconds####
 seconds = 60
 ########change the url below to whatever league you want to follow###
-url = "http://www.livescore.com/soccer/bolivia/primera-division-apertura/"
+url = bpl
 ######change the icon as well
-icon  = "/home/varun/live-football-update/images/"+ "bundesliga" +".png"
+icon  = "/home/varun/live-football-update/images/"+ "bpl" +".png"
 
 soup=b(requests.get(url).content,"lxml")
 
@@ -21,7 +21,7 @@ pynotify.init ("icon-summary-body")
 count =0
 ######################################################################################
 def getdetails(content, count):
-
+	a=[]
 	while count != len(url):	
 		for i in content:
 			a=[]
@@ -29,22 +29,19 @@ def getdetails(content, count):
 				continue
 			if "venue" in i.text:
 				break
-
 			else:
 				event_time = i.findAll("div")[0].text
 				a.append(event_time)
-
-			players =  i.findAll("span",{"class":"name"})
+				players =  i.findAll("span",{"class":"name"})
 			for x in players:
 				if x.text.strip():
 					a.append(x.text.strip())
 					
 					if i.findAll("span",{"class":"inc redcard"}):
 						a.append("Red Card")
-					
+						
 					if i.findAll("span",{"class":"inc yellowcard"}):
 						a.append("Yellow Card")
-
 					if i.findAll("span",{"class":"inc goal"}):
 						a.append("Goal")
 					if x.text.strip()==i.findAll("div",{"class":"ply tright"})[0].text.strip():
@@ -73,15 +70,16 @@ if current_match.find("img"):
 		details ="http://www.livescore.com/"+ score.find('a').get('href')
 
 		details_soup = b(requests.get(details).content,"lxml")
-
 		body = details_soup.findAll("div",{"data-id":"details"})
 		a,count=getdetails(body,count)
-
-		if a[len(a)-1]=="home_team":
-			notification = pynotify.Notification(home_team,a[0] + " "+a[2]+" "+a[1],icon)
-		else:
-			notification = pynotify.Notification(away_team,a[0] + " "+a[2]+" "+a[1],icon)
-		notification.show()
+		try:
+			if a[len(a)-2]=="home_team":
+				notification = pynotify.Notification(home_team,a[0] + " "+a[2]+" "+a[1],icon)
+			else:
+				notification = pynotify.Notification(away_team,a[0] + " "+a[2]+" "+a[1],icon)
+			notification.show()
+		except:
+			pass
 		#############################################################################
 
 
