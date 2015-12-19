@@ -47,6 +47,10 @@ def getdetails(content):
 
 					if i.findAll("span",{"class":"inc goal"}):
 						a.append("Goal")
+					if x.text.strip()==i.findAll("div",{"class":"ply tright"})[0].text.strip():
+						a.append("home_team")
+					else:
+						a.append("away_team")
 		count+=1
 	return a
 ######################################################
@@ -59,6 +63,12 @@ if current_match.find("img"):
 		home_team = current_match.findAll("div")[1].text
 
 		score = current_match.findAll("div")[2]
+		
+		away_team = current_match.findAll("div")[3].text
+
+		notification = pynotify.Notification(	home_team + ' vs ' + away_team, score.text + " in "+ match_time , icon	)
+		notification.show()
+
 		################################################################################
 		details ="http://www.livescore.com/"+ score.find('a').get('href')
 
@@ -66,13 +76,13 @@ if current_match.find("img"):
 
 		body = details_soup.findAll("div",{"data-id":"details"})
 		a=getdetails(body)
-		notification = pynotify.Notification(a[0],a[1]+" "+ a[2])
+		if a[len(a)-1]=="home_team":
+			notification = pynotify.Notification(home_team,a[0] + " "+a[2]+" "+a[1],icon)
+		else:
+			notification = pynotify.Notification(away_team,a[0] + " "+a[2]+" "+a[1],icon)
 		notification.show()
 		#############################################################################
-		away_team = current_match.findAll("div")[3].text
 
-		notification = pynotify.Notification(	home_team + ' vs ' + away_team, score.text + " in "+ match_time , icon	)
-		notification.show()
 
 		time.sleep(seconds)
 
