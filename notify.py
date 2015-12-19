@@ -1,4 +1,4 @@
-import sys
+import time
 import pynotify
 import requests
 from bs4 import BeautifulSoup as b
@@ -7,7 +7,9 @@ la_liga= "http://www.livescore.com/soccer/spain/primera-division/"
 bpl = "http://www.livescore.com/soccer/england/premier-league/"
 bundesliga="http://www.livescore.com/soccer/germany/bundesliga/"
 
-url=bundesliga
+seconds = 60
+
+url= la_liga
 
 
 soup=b(requests.get(url).content,"lxml")
@@ -18,28 +20,27 @@ pynotify.init ("icon-summary-body")
 
 if current_match.find("img"):
 
-	time = current_match.findAll("div")[0].text
+	match_time = current_match.findAll("div")[0].text
 
-	home_team = current_match.findAll("div")[1].text
+	while match_time!="HT" or match_time!="FT":
 
-	score = current_match.findAll("div")[2]
+		home_team = current_match.findAll("div")[1].text
 
-	details ="http://www.livescore.com/"+ score.find('a').get('href')
+		score = current_match.findAll("div")[2]
 
-	details_soup = b(requests.get(details).content,"lxml")
-	
+		details ="http://www.livescore.com/"+ score.find('a').get('href')
 
-	away_team = current_match.findAll("div")[3].text
-	 
-	icon  = "/home/varun/Desktop/live-football-update/football.png"
+		details_soup = b(requests.get(details).content,"lxml")
+		
+		away_team = current_match.findAll("div")[3].text
+		 
+		icon  = "/home/varun/live-football-update/images/la_liga.png"
 
-	notification = pynotify.Notification(	home_team + ' vs ' + away_team, score.text + " in "+ time , icon	)
-	notification.show()
+		notification = pynotify.Notification(	home_team + ' vs ' + away_team, score.text + " in "+ match_time , icon	)
+		notification.show()
 
-
-
-
+		time.sleep(seconds)
 
 else:
-	notification = pynotify.Notification(	"La Liga" , "No live match going on"	)
+	notification = pynotify.Notification(	 "No live match going on",icon	)
 	notification.show()
