@@ -39,11 +39,12 @@ def getdetails(content, count):
 					
 					if i.findAll("span",{"class":"inc redcard"}):
 						a.append("Red Card")
-						
 					if i.findAll("span",{"class":"inc yellowcard"}):
 						a.append("Yellow Card")
 					if i.findAll("span",{"class":"inc goal"}):
 						a.append("Goal")
+					if i.findAll("span",{"class":"inc redyellowcard"}):
+						a.append("Red Yellow Card")	
 					if x.text.strip()==i.findAll("div",{"class":"ply tright"})[0].text.strip():
 						a.append("home_team")
 					else:
@@ -63,7 +64,7 @@ if current_match.find("img"):
 		
 		away_team = current_match.findAll("div")[3].text
 
-		notification = pynotify.Notification(	home_team + ' vs ' + away_team, score.text + " in "+ match_time , icon	)
+		notification = pynotify.Notification(match_time+home_team+score.text.split("-")[0]+away_team+score.text.split("-")[1],"", icon)
 		notification.show()
 
 		################################################################################
@@ -73,7 +74,7 @@ if current_match.find("img"):
 		body = details_soup.findAll("div",{"data-id":"details"})
 		a,count=getdetails(body,count)
 		try:
-			if a[len(a)-2]=="home_team":
+			if a[len(a)-1]=="home_team":
 				notification = pynotify.Notification(home_team,a[0] + " "+a[2]+" "+a[1],icon)
 			else:
 				notification = pynotify.Notification(away_team,a[0] + " "+a[2]+" "+a[1],icon)
